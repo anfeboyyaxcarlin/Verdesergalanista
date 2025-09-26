@@ -1,0 +1,417 @@
+
+<!DOCTYPE html><html lang="es"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proyecto Verde Ser - Jardines Verticales</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&amp;display=swap" rel="stylesheet">
+    <style> 
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .section-title {
+            font-weight: 800;
+            font-size: 2.5rem; /* 40px */
+            line-height: 1.2;
+        }
+        .section-subtitle {
+            font-size: 1.125rem; /* 18px */
+            line-height: 1.75rem;
+            color: #6b7280; /* gray-500 */
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+        /* Chatbot Styles */
+        #chat-icon {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            background-color: #15803d; /* green-700 */
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+        #chat-icon:hover {
+            transform: scale(1.1);
+        }
+        #chat-window {
+            position: fixed;
+            bottom: 6.5rem;
+            right: 2rem;
+            width: 90%;
+            max-width: 400px;
+            height: 500px;
+            background-color: white;
+            border-radius: 1rem;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transform: scale(0.95);
+            opacity: 0;
+            visibility: hidden;
+            transition: transform 0.3s ease, opacity 0.3s ease, visibility 0.3s;
+            z-index: 1000;
+        }
+        #chat-window.open {
+            transform: scale(1);
+            opacity: 1;
+            visibility: visible;
+        }
+        .chat-header {
+            background-color: #166534; /* green-800 */
+            color: white;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .chat-messages {
+            flex-grow: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        .message {
+            padding: 0.75rem 1rem;
+            border-radius: 1rem;
+            max-width: 80%;
+            line-height: 1.5;
+        }
+        .message.user {
+            background-color: #dcfce7; /* green-100 */
+            color: #14532d; /* green-900 */
+            align-self: flex-end;
+            border-bottom-right-radius: 0.25rem;
+        }
+        .message.bot {
+            background-color: #f3f4f6; /* gray-100 */
+            color: #1f2937; /* gray-800 */
+            align-self: flex-start;
+            border-bottom-left-radius: 0.25rem;
+        }
+        .message.bot.typing {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #9ca3af; /* gray-400 */
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+        .typing-dot:nth-child(2) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(3) { animation-delay: -0.16s; }
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1.0); }
+        }
+    </style>
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.container{width:100%}@media (min-width: 640px){.container{max-width:640px}}@media (min-width: 768px){.container{max-width:768px}}@media (min-width: 1024px){.container{max-width:1024px}}@media (min-width: 1280px){.container{max-width:1280px}}@media (min-width: 1536px){.container{max-width:1536px}}.absolute{position:absolute}.relative{position:relative}.sticky{position:sticky}.inset-0{inset:0px}.top-0{top:0px}.z-50{z-index:50}.col-span-2{grid-column:span 2 / span 2}.mx-auto{margin-left:auto;margin-right:auto}.mb-16{margin-bottom:4rem}.mr-2{margin-right:0.5rem}.mt-2{margin-top:0.5rem}.mt-4{margin-top:1rem}.mt-6{margin-top:1.5rem}.mt-8{margin-top:2rem}.mr-3{margin-right:0.75rem}.inline-block{display:inline-block}.flex{display:flex}.grid{display:grid}.hidden{display:none}.h-10{height:2.5rem}.h-6{height:1.5rem}.h-64{height:16rem}.h-7{height:1.75rem}.h-8{height:2rem}.h-full{height:100%}.h-96{height:24rem}.w-10{width:2.5rem}.w-6{width:1.5rem}.w-7{width:1.75rem}.w-8{width:2rem}.w-full{width:100%}.max-w-3xl{max-width:48rem}.max-w-4xl{max-width:56rem}.flex-grow{flex-grow:1}.transform{transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.items-center{align-items:center}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-12{gap:3rem}.gap-16{gap:4rem}.gap-2{gap:0.5rem}.gap-3{gap:0.75rem}.gap-4{gap:1rem}.gap-8{gap:2rem}.space-x-4 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(1rem * var(--tw-space-x-reverse));margin-left:calc(1rem * calc(1 - var(--tw-space-x-reverse)))}.space-x-8 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(2rem * var(--tw-space-x-reverse));margin-left:calc(2rem * calc(1 - var(--tw-space-x-reverse)))}.overflow-hidden{overflow:hidden}.rounded-2xl{border-radius:1rem}.rounded-3xl{border-radius:1.5rem}.rounded-full{border-radius:9999px}.rounded-lg{border-radius:0.5rem}.border{border-width:1px}.border-t{border-top-width:1px}.border-gray-200{--tw-border-opacity:1;border-color:rgb(229 231 235 / var(--tw-border-opacity, 1))}.border-gray-300{--tw-border-opacity:1;border-color:rgb(209 213 219 / var(--tw-border-opacity, 1))}.border-transparent{border-color:transparent}.bg-stone-50{--tw-bg-opacity:1;background-color:rgb(250 250 249 / var(--tw-bg-opacity, 1))}.bg-green-700{--tw-bg-opacity:1;background-color:rgb(21 128 61 / var(--tw-bg-opacity, 1))}.bg-green-800{--tw-bg-opacity:1;background-color:rgb(22 101 52 / var(--tw-bg-opacity, 1))}.bg-green-900{--tw-bg-opacity:1;background-color:rgb(20 83 45 / var(--tw-bg-opacity, 1))}.bg-stone-50\/80{background-color:rgb(250 250 249 / 0.8)}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.bg-white\/20{background-color:rgb(255 255 255 / 0.2)}.bg-black{--tw-bg-opacity:1;background-color:rgb(0 0 0 / var(--tw-bg-opacity, 1))}.bg-opacity-50{--tw-bg-opacity:0.5}.bg-cover{background-size:cover}.bg-center{background-position:center}.object-cover{object-fit:cover}.p-3{padding:0.75rem}.p-4{padding:1rem}.p-8{padding:2rem}.px-4{padding-left:1rem;padding-right:1rem}.px-6{padding-left:1.5rem;padding-right:1.5rem}.px-8{padding-left:2rem;padding-right:2rem}.py-10{padding-top:2.5rem;padding-bottom:2.5rem}.py-2{padding-top:0.5rem;padding-bottom:0.5rem}.py-24{padding-top:6rem;padding-bottom:6rem}.py-3{padding-top:0.75rem;padding-bottom:0.75rem}.py-4{padding-top:1rem;padding-bottom:1rem}.py-40{padding-top:10rem;padding-bottom:10rem}.text-left{text-align:left}.text-center{text-align:center}.text-2xl{font-size:1.5rem;line-height:2rem}.text-3xl{font-size:1.875rem;line-height:2.25rem}.text-4xl{font-size:2.25rem;line-height:2.5rem}.text-5xl{font-size:3rem;line-height:1}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.text-xs{font-size:0.75rem;line-height:1rem}.font-bold{font-weight:700}.font-extrabold{font-weight:800}.font-semibold{font-weight:600}.leading-none{line-height:1}.leading-tight{line-height:1.25}.text-gray-800{--tw-text-opacity:1;color:rgb(31 41 55 / var(--tw-text-opacity, 1))}.text-gray-600{--tw-text-opacity:1;color:rgb(75 85 99 / var(--tw-text-opacity, 1))}.text-gray-700{--tw-text-opacity:1;color:rgb(55 65 81 / var(--tw-text-opacity, 1))}.text-green-200{--tw-text-opacity:1;color:rgb(187 247 208 / var(--tw-text-opacity, 1))}.text-green-700{--tw-text-opacity:1;color:rgb(21 128 61 / var(--tw-text-opacity, 1))}.text-green-800{--tw-text-opacity:1;color:rgb(22 101 52 / var(--tw-text-opacity, 1))}.text-green-900{--tw-text-opacity:1;color:rgb(20 83 45 / var(--tw-text-opacity, 1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.text-gray-200{--tw-text-opacity:1;color:rgb(229 231 235 / var(--tw-text-opacity, 1))}.opacity-80{opacity:0.8}.shadow-md{--tw-shadow:0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-xl{--tw-shadow:0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 20px 25px -5px var(--tw-shadow-color), 0 8px 10px -6px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.backdrop-blur-lg{--tw-backdrop-blur:blur(16px);-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.transition-colors{transition-property:color, background-color, border-color, fill, stroke, -webkit-text-decoration-color;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, -webkit-text-decoration-color;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-transform{transition-property:transform;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.hover\:scale-105:hover{--tw-scale-x:1.05;--tw-scale-y:1.05;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.hover\:bg-gray-100:hover{--tw-bg-opacity:1;background-color:rgb(243 244 246 / var(--tw-bg-opacity, 1))}.hover\:bg-green-800:hover{--tw-bg-opacity:1;background-color:rgb(22 101 52 / var(--tw-bg-opacity, 1))}.hover\:bg-green-900:hover{--tw-bg-opacity:1;background-color:rgb(20 83 45 / var(--tw-bg-opacity, 1))}.hover\:bg-gray-200:hover{--tw-bg-opacity:1;background-color:rgb(229 231 235 / var(--tw-bg-opacity, 1))}.hover\:text-green-800:hover{--tw-text-opacity:1;color:rgb(22 101 52 / var(--tw-text-opacity, 1))}.hover\:underline:hover{-webkit-text-decoration-line:underline;text-decoration-line:underline}.focus\:outline-none:focus{outline:2px solid transparent;outline-offset:2px}.focus\:ring-2:focus{--tw-ring-offset-shadow:var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);--tw-ring-shadow:var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);box-shadow:var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000)}.focus\:ring-green-700:focus{--tw-ring-opacity:1;--tw-ring-color:rgb(21 128 61 / var(--tw-ring-opacity, 1))}@media (min-width: 640px){.sm\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}}@media (min-width: 768px){.md\:col-span-1{grid-column:span 1 / span 1}.md\:flex{display:flex}.md\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.md\:grid-cols-3{grid-template-columns:repeat(3, minmax(0, 1fr))}.md\:grid-cols-4{grid-template-columns:repeat(4, minmax(0, 1fr))}.md\:text-6xl{font-size:3.75rem;line-height:1}}@media (min-width: 1024px){.lg\:grid-cols-4{grid-template-columns:repeat(4, minmax(0, 1fr))}}</style><style>
+
+</style>
+</head>
+<body class="bg-stone-50 text-gray-800">
+
+    <!-- Header & Navigation -->
+    <header class="bg-stone-50/80 backdrop-blur-lg sticky top-0 z-50">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+             <a href="#" class="text-2xl font-bold text-green-900 flex items-center">
+                <img src="https://lh3.googleusercontent.com/sitesv/AICyYdZR1LlMkAr5G_ZyEjSdOb3jxsRa1hL4jChrS854asfWAgDvgnLNFVzCH1wmqDkJ8TElo24_TusCjb2GZMwzMYG_R-mc59ysK4bwq1HJ_ui7eZgRXGIPqhAXUdUt6hutg7WFO0RkhCYa08tvCdVkKMfaBZoU0h87S6RMvYc5exJ4X3-FMVud80G2jjykqyRukVUW0pJxCmVUJOYyvl1U_UshNSclRLniuYRe=w1280" alt="Logo Verde Ser" class="h-10 mr-3">
+                Verde Ser
+            </a>
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="#sobre-nosotros" class="text-gray-600 hover:text-green-800">Sobre Nosotros</a>
+                <a href="#proceso" class="text-gray-600 hover:text-green-800">Proceso</a>
+                <a href="#galeria" class="text-gray-600 hover:text-green-800">Galería</a>
+                <a href="#contacto" class="text-gray-600 hover:text-green-800">Participa</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="relative bg-cover bg-center" style="background-image: url('https://lh3.googleusercontent.com/sitesv/AICyYdZm0EXZQAy260nqytWOriiB7ZQSc0CqEabOzU3aVqp_0cET7sahiZv_lk4mblTV_Licaj9elcEKZqdFSNTmYPYnJty1Uzd7Eq4Tk4DtkcUs52vNYcUE7erAAmWtfNFlTzbqi9RwtNP8rNCjUbHb9ZyKYPrMM5DE4fnUjVJBEhdryC7Fp5IoYWod69LY0NBVWP7-KilUqWWZ0HvCIW8J5KHQ1f7fb1RiDLLu=w1280');">
+            <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+            <div class="relative container mx-auto px-6 py-40 text-center">
+                <div class="max-w-4xl mx-auto">
+                    <h1 class="text-5xl md:text-6xl font-extrabold text-white leading-tight">Hagamos nuestra Tierra Verde y Limpia</h1>
+                    <p class="mt-6 text-lg text-gray-200">Transformando espacios escolares en ecosistemas vivos y aulas de aprendizaje práctico a través de nuestro proyecto de jardines verticales.</p>
+                    <div class="mt-8 flex justify-center space-x-4">
+                        <a href="#proceso" class="inline-block bg-green-800 hover:bg-green-900 text-white font-bold py-3 px-8 rounded-lg transition-transform transform hover:scale-105">
+                            Nuestro Proceso
+                        </a>
+                        <a href="#galeria" class="inline-block bg-white border border-transparent hover:bg-gray-200 text-gray-800 font-bold py-3 px-8 rounded-lg transition-transform transform hover:scale-105">
+                            Ver Galería
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="sobre-nosotros" class="py-24 bg-white">
+            <div class="container mx-auto px-6 text-center">
+                <div class="max-w-4xl mx-auto">
+                    <h2 class="section-title text-green-900">Protegiendo Nuestro Planeta</h2>
+                    <p class="mt-4 section-subtitle">Este proyecto surge de la necesidad de aprovechar productivamente nuestros espacios. Creemos que la educación ambiental es fundamental y se articula con todas las áreas del desempeño humano. Buscamos generar cambios significativos en el comportamiento diario de cada persona, y "Verde Ser" es un paso adelante en nuestro compromiso con la preservación del medio ambiente.</p>
+                    <a href="#" class="mt-6 inline-block text-green-800 font-bold hover:underline">Leer Más &gt;</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Process Section -->
+        <section id="proceso" class="py-24">
+             <div class="container mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h2 class="section-title text-green-900">Nuestra Ruta Metodológica</h2>
+                    <p class="section-subtitle mt-4 max-w-3xl mx-auto">Un proceso estructurado donde los estudiantes son los protagonistas, aplicando el Aprendizaje Basado en Proyectos.</p>
+                </div>
+                <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <!-- Step 1 -->
+                    <div class="bg-white p-8 rounded-2xl shadow-md">
+                        <span class="text-4xl font-bold text-green-800">01</span>
+                        <h3 class="text-xl font-bold mt-4">Convocatoria y Planificación</h3>
+                        <p class="mt-2 text-gray-600">Motivamos, investigamos y diseñamos el jardín y su sistema de riego.</p>
+                    </div>
+                    <!-- Step 2 -->
+                    <div class="bg-white p-8 rounded-2xl shadow-md">
+                        <span class="text-4xl font-bold text-green-800">02</span>
+                        <h3 class="text-xl font-bold mt-4">Implementación</h3>
+                        <p class="mt-2 text-gray-600">Preparamos el área, las macetas recicladas y damos vida al jardín.</p>
+                    </div>
+                    <!-- Step 3 -->
+                    <div class="bg-white p-8 rounded-2xl shadow-md">
+                        <span class="text-4xl font-bold text-green-800">03</span>
+                        <h3 class="text-xl font-bold mt-4">Mantenimiento y Monitoreo</h3>
+                        <p class="mt-2 text-gray-600">Cuidamos continuamente el jardín, asegurando su crecimiento y salud.</p>
+                    </div>
+                    <!-- Step 4 -->
+                    <div class="bg-white p-8 rounded-2xl shadow-md">
+                        <span class="text-4xl font-bold text-green-800">04</span>
+                        <h3 class="text-xl font-bold mt-4">Resultados y Divulgación</h3>
+                        <p class="mt-2 text-gray-600">Analizamos el impacto y compartimos nuestros logros con la comunidad.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Gallery Section -->
+        <section id="galeria" class="py-24 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h2 class="section-title text-green-900">Nuestra Galería</h2>
+                    <p class="section-subtitle mt-4 max-w-3xl mx-auto">Imágenes que cuentan la historia de nuestro esfuerzo y dedicación.</p>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <img src="https://lh3.googleusercontent.com/sitesv/AICyYdbxNbhKgkko6OUgiJxV_pQKGseQj0LfF1RWY3yhoB_5w4z_FKTinXbh8GmF9WPrrt7BEXpGshKC1tXFzyZZfyrza5WJ07C65_G1DFEWHz6-AlOFQTMI-ExMW7vcnpna_l480i_g82MFxogfte3oaj2zlwEUCfYQeqkUpqQ3sgvOxatY_eVIEf4el2lGqDQ7lbng6bl7ap5YhpdkHGRTNR8sDxK74ipi_0JWZ7E=w1280" alt="Foto de la galería 1" class="w-full h-96 object-cover rounded-2xl">
+                    <img src="https://lh3.googleusercontent.com/sitesv/AICyYdZwzr25jLcMxS7SNCf_oxBtdfiVgfaVgULcVAKsnguXah2Jwdt_Tb1Mo9CeiimOni4EY3yL_cXC8om3WSnZ-trxzXyoLuJRs_9KJYFS9F-sEwth2E0bvA4lDMcVAlLcRDquwT8R4XXjBElSLWpMOv8cYaIJQxRe64fb3RzeHhzclQRBAz5REOmyHkRuT5uKn7q-ZKQAiHXCLd6e8q3FHyHwN-vmR_Y-6_kypAI=w1280" alt="Foto de la galería 2" class="w-full h-96 object-cover rounded-2xl">
+                    <img src="https://lh3.googleusercontent.com/sitesv/AICyYdb7lKmoO0n9mk0rlScDkQ5eWjO4XPBQovyZ4-PSL4Pb-n_pnxgCa4t_hprTddTa3ZjDSTEhnUPt-u3KZwc_YeSVZC-R69whxwLHGyKAOplRN8eM7iWIKo1DmnVrg_qiUuYOv5YQMNM2nqjoHWDNvw7FqbXxOu6pjqyOwNly0JDxT7QQgATLvbifT8UL1LYk66TdYwWEM6WFHE_GgXKOShzPHf1ouSC1cTgilrM=w1280" alt="Foto de la galería 3" class="w-full h-96 object-cover rounded-2xl">
+                    <img src="https://lh3.googleusercontent.com/sitesv/AICyYdY1KezfRv6MxF3aD4axm33KMy2JynaOAoI762lEqp6i7cdq8kWKQiKeKc8qmZKPXzp3TGa4yAM_l82luEFMo_Wj8r9XhATb43-MMMdrDfPuNkz9zkwJlMgktEgyKk7ZMHnOaGBLHWlZ8ArJH01Osr7WHN453EhBQiODnTLX2eGwcqOMzjSy8-rpb4r9wYN3Cd6773syyVlxmHu4ck6kuBkh6INcqW8GXWiLxXs=w1280" alt="Foto de la galería 4" class="w-full h-96 object-cover rounded-2xl">
+                    <img src="https://lh3.googleusercontent.com/sitesv/AICyYdbpZLW7o2d1zoPZtFPKftFjeseYkrDBHTkmV70mDRD4mNV75VVFYyj-qFld_0s-ofNxAMtMtP7tlQu1uatqWM78HyBUqn9lKBFpEC1g1RYu3OG2vgY4FhD3c6aD1KSjHdhipN_ioGnz7fnViT5IqKu6zBH2vZAF4vzeHmKs6LKcUcAmo4-YgqGlcGBEDK2Ac3oJrjOqVIQTwUi5o3bF5TOOIi5tDJB3OgPWx1c=w1280" alt="Foto de la galería 5" class="w-full h-96 object-cover rounded-2xl">
+                    <img src="https://lh3.googleusercontent.com/sitesv/AICyYdbbya_bAluM6h15oRxqJ95UgxoGEXwpDfdHiHbN1XGdzDq-bzrVXhPGlF7hd0BsqL4Tmdu8Zlam9n6A_xQKnfR0T-qnerSxgqNF9z_GRqZ2peKSnZUOWos2r_n43uoioyRweFJVUATLv6geezjILuwktsPD-uEXpwf31iehjx18n1NKOIYEXOGiw_gLwkjcx2wDMNlkC5Ob6C5RyUQ-GhS45050vmVx_0Er=w1280" alt="Foto de la galería 6" class="w-full h-96 object-cover rounded-2xl">
+                    <img src="https://lh3.googleusercontent.com/sitesv/AICyYdY5WA0EsId7olYk2KTT10pFI4Am1DZ07fz-sCX3gx7kh5mPb4Ln3m4r3PghRlClB3a4xWwodnAF33ZZOghSFuilcEDgpqUpl0J3iX0sgDbBAccxIcSE8CmrmJ3nR9hfCWzQ8MYhAf3j3dsutKirflsSy2w2GoalvE64fCY0aj_xGc2SYKTJPTkq0PSTnS7dj6Ba7Nuutfh3qTOgEkLtRiTW178Cwl8dkrFz=w1280" alt="Foto de la galería 7" class="w-full h-96 object-cover rounded-2xl">
+                    <img src="https://lh3.googleusercontent.com/sitesv/AICyYdZYRkhGYUubp_d0cJXhE-vWVfuyO4ZO6PAhU7he4eZGWm8qIUPLbjx7jojGjMM9cQJF1YXG2lJ90negCn-59H-ylXnY2xOXrstdG1YLoxEMf_qH5MLK8Qw6k-AtjJwkHYPspVwdPx9nz0mprdCmdVajeu-KwX23UyC6GA5zBDKMopGXmXd15iRXeLoOFGjJkQrEyMCrOc3nPZQVmnfPM-UC6yAaC2jpMu_HzZc=w1280" alt="Foto de la galería 8" class="w-full h-96 object-cover rounded-2xl">
+                    <img src="https://lh3.googleusercontent.com/sitesv/AICyYdaEqN8Y5GCTyFOXTGMxwsK99mKgPLgaNRAW8ifOOcyHZXdqM3cCWFpiRsKJW_wHMKBEpF7irdPmPuse04nnT3lEVZTSAFgXbO47nTRTtjVL8cfbYPOFp1hONsewnHCl8_ncemz9imUy8WZozMzBdIG6g_jq7xpKgegOPv1KlyEakr1jhEIlz6pPX5tXWY6A3Yy--RGUMy2Y72dUOjsx5YSCsTFKbkmQNKJ1=w1280" alt="Foto de la galería 9" class="w-full h-96 object-cover rounded-2xl">
+                    <img src="https://lh3.googleusercontent.com/sitesv/AICyYdb95UyGTsw27-npYms1N5AfCq478xpFoPL3auyvPOxUbbTwqBH96nJgjO6wtAK-OdnLpA7iq7Tuqkppmqe4O5BkD0hoOLtHloP6qGD8KY7ItkPqLlqX6GBEr0kanNrhxUtG0wXQwUPDe1LwNP9eYajuMG3W1GPU304z8JWKsbmkVnMMizDUAmnpqXLTE-w2R-Q5pViUzN5Q8MiiDQvj_xKd5WvEMm-Prkqp9xw=w1280" alt="Foto de la galería 10" class="w-full h-96 object-cover rounded-2xl">
+                    <img src="https://lh3.googleusercontent.com/sitesv/AICyYdZRmGpNrJ4dsxN9h1EgoyLeU_B5LrRRJB5PplwSOLBVxOLZyMvZy25nYfg-kDd5U4_C39E3celKcERWA8-fx3VhtWgqVXrUOi1gk63QXkGGSJRvYlxtuhD3Bb5U-8WMSsUIUireIqSY3dnOboiXD5QOQ0b6v1w1nZF46wGwE9pxfZVnlBYPTTDxX1iSlvF2YDsaADaK2dNoLKnj7q8FicIfC__E5IBTvdlz0gw=w1280" alt="Foto de la galería 11" class="w-full h-96 object-cover rounded-2xl">
+                    <img src="https://lh3.googleusercontent.com/sitesv/AICyYdY5sYCuFXuG6TphykMpyBOxZSGqpTdtQIG91kRMAKhzfUz8Cbn97opEpnePbebRCfOvIhinM946WR6UfZ2U20U_liTuzUznZxDAicZp3MddvUKzWbVzQVxJDyTr4aqtsx1ndeqauQ2qslvfJuB0MA0eyOv2CHYChYoo-cp0zBP_DSYva-TAAlSHQ1Fbko38fR5h-kzgReNgXj1Y77xQxlbK8MJ6XSSbHjwF=w1280" alt="Foto de la galería 12" class="w-full h-96 object-cover rounded-2xl">
+                </div>
+            </div>
+        </section>
+        
+        <!-- Contact/Participate Section -->
+        <section id="contacto" class="py-24">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="section-title text-green-900">Únete a la Causa</h2>
+                <p class="section-subtitle mt-4 max-w-3xl mx-auto">Tu apoyo es fundamental para mantener vivo nuestro jardín. Contacta a los responsables del proyecto para más información.</p>
+                <div class="mt-8">
+                     <p class="text-xl font-semibold text-gray-700">Lic. Laura Marcela Rodríguez &amp; Lic. Gloria Adriana Patiño</p>
+                     <p class="mt-2 text-gray-600">Institución Educativa Luis Carlos Galán Sarmiento - Villavicencio</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-green-900 text-white">
+        <div class="container mx-auto px-6 py-10 text-center">
+            <a href="#" class="text-2xl font-bold text-white flex items-center justify-center">
+                 <img src="https://lh3.googleusercontent.com/sitesv/AICyYdZR1LlMkAr5G_ZyEjSdOb3jxsRa1hL4jChrS854asfWAgDvgnLNFVzCH1wmqDkJ8TElo24_TusCjb2GZMwzMYG_R-mc59ysK4bwq1HJ_ui7eZgRXGIPqhAXUdUt6hutg7WFO0RkhCYa08tvCdVkKMfaBZoU0h87S6RMvYc5exJ4X3-FMVud80G2jjykqyRukVUW0pJxCmVUJOYyvl1U_UshNSclRLniuYRe=w1280" alt="Logo Verde Ser" class="h-10 mr-3">
+                Verde Ser
+            </a>
+            <p class="mt-4 text-sm text-green-200">© 2024 Proyecto Verde Ser. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- Chatbot Feature -->
+    <div id="chat-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M10 2a6 6 0 00-6 6v3.586l-1.707 1.707A1 1 0 003 15h14a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"></path>
+        </svg>
+    </div>
+
+    <div id="chat-window">
+        <div class="chat-header">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="font-bold">Asistente Virtual Verde</h3>
+                    <p class="text-xs opacity-80">Estoy aquí para ayudar</p>
+                </div>
+            </div>
+            <button id="close-chat" class="text-white text-3xl leading-none">×</button>
+        </div>
+        <div class="chat-messages" id="chat-messages">
+            <div class="message bot">
+                ¡Hola! Soy Verde, tu asistente virtual. ¿En qué puedo ayudarte hoy sobre el proyecto, sostenibilidad o jardinería?
+            </div>
+        </div>
+        <div class="chat-input p-4 bg-white border-t border-gray-200">
+            <form id="chat-form" class="flex gap-2">
+                <input type="text" id="chat-input-field" placeholder="Escribe tu pregunta..." class="flex-grow w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-green-700" autocomplete="off">
+                <button type="submit" class="bg-green-700 text-white p-3 rounded-full hover:bg-green-800 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.428A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path>
+                    </svg>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const chatIcon = document.getElementById('chat-icon');
+        const chatWindow = document.getElementById('chat-window');
+        const closeChatBtn = document.getElementById('close-chat');
+        const chatForm = document.getElementById('chat-form');
+        const chatInputField = document.getElementById('chat-input-field');
+        const chatMessages = document.getElementById('chat-messages');
+
+        // Toggle chat window
+        chatIcon.addEventListener('click', () => chatWindow.classList.toggle('open'));
+        closeChatBtn.addEventListener('click', () => chatWindow.classList.remove('open'));
+
+        chatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const userInput = chatInputField.value.trim();
+            if (!userInput) return;
+
+            addMessage(userInput, 'user');
+            chatInputField.value = '';
+            showTypingIndicator();
+
+            try {
+                const botResponse = await getGeminiResponse(userInput);
+                removeTypingIndicator();
+                addMessage(botResponse, 'bot');
+            } catch (error) {
+                removeTypingIndicator();
+                addMessage('Lo siento, algo salió mal. Por favor, intenta de nuevo.', 'bot');
+                console.error("Error fetching Gemini response:", error);
+            }
+        });
+
+        function addMessage(text, sender) {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message', sender);
+            messageElement.textContent = text;
+            chatMessages.appendChild(messageElement);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function showTypingIndicator() {
+            const typingElement = document.createElement('div');
+            typingElement.classList.add('message', 'bot', 'typing');
+            typingElement.id = 'typing-indicator';
+            typingElement.innerHTML = `
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+            `;
+            chatMessages.appendChild(typingElement);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        function removeTypingIndicator() {
+            const typingIndicator = document.getElementById('typing-indicator');
+            if (typingIndicator) {
+                typingIndicator.remove();
+            }
+        }
+
+        async function getGeminiResponse(userQuery) {
+            const apiKey = ""; // Canvas will provide the API key
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+            const projectContext = `
+                El proyecto se llama "Jardines Verticales 'Verde Ser'" y se desarrolla en la Institución Educativa Luis Carlos Galán Sarmiento en Villavicencio, Colombia.
+                Objetivo principal: Elaborar un jardín vertical con materiales reciclables y plantas ornamentales/medicinales para embellecer la institución, promover la conciencia ambiental y vincular modalidades técnicas como Recursos Naturales y Robótica.
+                Materiales: Se usan materiales reciclados como botellas plásticas.
+                Colaboración: Involucra a estudiantes de 8°, 10° y 11°, docentes y las modalidades de Recursos Naturales y Robótica (para el sistema de riego).
+                Ubicación: Se instala en la malla del cerramiento del polideportivo de la institución.
+                Responsables: Lic. Laura Marcela Rodríguez y Lic. Gloria Adriana Patiño.
+            `;
+
+            const systemPrompt = `
+                Eres "Verde", el asistente virtual y mascota amigable del proyecto "Verde Ser". Tu personalidad es servicial, positiva y apasionada por el medio ambiente.
+                Tu base de conocimientos principal es la información sobre el proyecto "Verde Ser": ${projectContext}.
+                También eres un experto en temas generales de sostenibilidad, reciclaje, y cómo crear jardines verticales en casa, especialmente con consejos aplicables al contexto de Colombia.
+                Responde las preguntas de los usuarios de manera clara, concisa y amigable.
+                Si una pregunta no está relacionada con estos temas, amablemente redirige la conversación hacia tus áreas de especialización.
+                Mantén tus respuestas breves y fáciles de leer.
+                Habla siempre en español.
+            `;
+            
+            try {
+                const payload = {
+                    contents: [{ parts: [{ text: userQuery }] }],
+                    systemInstruction: {
+                        parts: [{ text: systemPrompt }]
+                    },
+                };
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API error: ${response.status} ${response.statusText}`);
+                }
+
+                const result = await response.json();
+                const candidate = result.candidates?.[0];
+
+                if (candidate && candidate.content?.parts?.[0]?.text) {
+                    return candidate.content.parts[0].text;
+                } else {
+                    return "No pude procesar esa respuesta. ¿Podrías intentar con otra pregunta?";
+                }
+            } catch (error) {
+                console.error("Error calling Gemini API:", error);
+                throw error;
+            }
+        }
+    </script>
+
+
+
+</body></html>
